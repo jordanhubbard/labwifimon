@@ -1,0 +1,26 @@
+# =============================================================================
+# Grafana Datasource Provisioning — InfluxDB 2 (Flux)
+# =============================================================================
+# Environment variables are substituted at container startup.
+# INFLUXDB_TOKEN, INFLUXDB_ORG, INFLUXDB_BUCKET must be set in the environment.
+# These are passed through from docker-compose.yml via the .env file.
+
+apiVersion: 1
+
+datasources:
+  - name: InfluxDB — LabWiFiMon
+    type: influxdb
+    uid: influxdb-labwifimon
+    access: proxy
+    url: http://influxdb:8086
+    isDefault: true
+    editable: false
+
+    jsonData:
+      version: Flux
+      organization: "${INFLUXDB_ORG}"
+      defaultBucket: "${INFLUXDB_BUCKET}"
+      tlsSkipVerify: true
+
+    secureJsonData:
+      token: "${INFLUXDB_TOKEN}"

@@ -1,0 +1,66 @@
+# LabWiFiMon Linux Probe — Systemd Unit File
+#
+# Installed to /etc/systemd/system/labwifimon-probe.service by install.sh.
+# To install manually:
+#   sudo cp labwifimon-probe.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now labwifimon-probe
+#
+# To run as a non-root user instead:
+#   1. Create user:   sudo useradd -r -s /sbin/nologin labwifimon
+#   2. Uncomment the User= line and comment out the root line
+#   3. Grant capabilities to the Python binary:
+#      sudo setcap 'cap_net_admin,cap_net_raw+eip' /opt/labwifimon/venv/bin/python3
+
+[Unit]
+Description=LabWiFiMon Linux Probe — WiFi quality monitoring
+Documentation=https://github.com/your-org/labwifimon
+After=network-online.target
+Wants=network-online.target
+# If Mosquitto runs on the same host, wait for it too
+After=mosquitto.service
+
+[Service]
+Type=simple
+
+# Run as root so iw scan and raw sockets work without extra capability setup.
+# See the header comment above for a non-root alternative.
+User=root
+
+WorkingDirectory=/opt/labwifimon
+
+# PYTHONPATH lets probe.py find wifi7_info.py in the same directory
+Environment=PYTHONPATH=/opt/labwifimon
+
+ExecStart=/opt/labwifimon/venv/bin/python3 \
+    /opt/labwifimon/probe.py \
+    --config /etc/labwifimon/config.yaml
+
+# Graceful stop: send SIGTERM, wait 10 s, then SIGKILL
+KillMode=mixed
+TimeoutStopSec=10
+
+Restart=on-failure
+RestartSec=15
+StartLimitInterval=120
+StartLimitBurst=4
+
+# Journal output (view with: journalctl -u labwifimon-probe -f)
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=labwifimon-probe
+
+# Network capabilities for 'iw dev scan' and raw sockets (monitor_mode)
+# These are only effective when User= is not root; harmless otherwise.
+AmbientCapabilities=CAP_NET_ADMIN CAP_NET_RAW
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_RAW
+
+# Resource guardrails — the probe is lightweight
+MemoryMax=128M
+CPUQuota=30%
+
+# Minor sandboxing (disable if causing issues on older kernels)
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LabWiFiMon — {{ probe_id }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    .hero-section {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      align-items: start;
+      margin-bottom: 24px;
+    }
+
+    .hero-signal-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hero-signal-wrapper {
+      position: relative;
+      width: 300px;
+      height: 220px;
+    }
+
+    .hero-signal-wrapper canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .hero-probe-name {
+      font-family: var(--font-mono);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--blue);
+      text-shadow: 0 0 20px rgba(0,180,255,0.4);
+      text-align: center;
+    }
+
+    @media (max-width: 800px) {
+      .hero-section { grid-template-columns: 1fr; }
+      .hero-signal-card { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────────── -->
+<header class="site-header">
+  <div class="logo">Lab<span>WiFi</span>Mon</div>
+
+  <a class="back-link" href="/">← Dashboard</a>
+
+  <div class="detail-probe-name" style="margin-left:8px">{{ probe_id }}</div>
+
+  <div class="probe-status unknown" id="detail-status" style="margin-left:8px">
+    <span class="status-dot"></span>
+    <span class="status-text">unknown</span>
+  </div>
+
+  <div class="connection-badge disconnected" id="conn-badge" style="margin-left:auto">
+    <span class="dot"></span>
+    <span class="label">Connecting…</span>
+  </div>
+</header>
+
+<!-- ── Main content ────────────────────────────────────────────────────────── -->
+<main class="main-content">
+
+  <!-- Hero: signal visualization + stat cards -->
+  <div class="hero-section">
+
+    <!-- Large animated signal indicator -->
+    <div class="hero-signal-card">
+      <div class="hero-probe-name">{{ probe_id }}</div>
+      <div class="hero-signal-wrapper">
+        <canvas id="hero-signal-canvas"   width="300" height="220"></canvas>
+        <canvas id="hero-particle-canvas" width="300" height="220" style="pointer-events:none"></canvas>
+      </div>
+    </div>
+
+    <!-- Live stat cards -->
+    <div>
+      <div class="section-title">Live Metrics</div>
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="s-label">RSSI</div>
+          <div class="s-value green" id="dc-rssi">--</div>
+          <div class="s-unit">dBm</div>
+        </div>
+        <div class="stat-card">
+          <div class="s-label">Latency</div>
+          <div class="s-value blue" id="dc-latency">--</div>
+          <div class="s-unit">ms round-trip</div>
+        </div>
+        <div class="stat-card">
+          <div class="s-label">Jitter</div>
+          <div class="s-value" style="color:var(--purple,#b48eff)" id="dc-jitter">--</div>
+          <div class="s-unit">ms</div>
+        </div>
+        <div class="stat-card">
+          <div class="s-label">Packet Loss</div>
+          <div class="s-value" style="color:var(--red)" id="dc-loss">--</div>
+          <div class="s-unit">%</div>
+        </div>
+        <div class="stat-card">
+          <div class="s-label">Throughput</div>
+          <div class="s-value" style="color:var(--amber)" id="dc-throughput">--</div>
+          <div class="s-unit">Mbps</div>
+        </div>
+        <div class="stat-card">
+          <div class="s-label">Health Score</div>
+          <div class="s-value green" id="dc-health">--</div>
+          <div class="s-unit">/ 100</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Historical charts -->
+  <div class="section-title">Historical Data</div>
+  <div class="charts-section">
+
+    <div class="chart-card">
+      <h3>Signal Strength (RSSI)</h3>
+      <canvas id="chart-rssi"></canvas>
+    </div>
+
+    <div class="chart-card">
+      <h3>Latency &amp; Jitter</h3>
+      <canvas id="chart-latjit"></canvas>
+    </div>
+
+    <div class="chart-card">
+      <h3>Packet Loss</h3>
+      <canvas id="chart-loss"></canvas>
+    </div>
+
+    <div class="chart-card">
+      <h3>Throughput</h3>
+      <canvas id="chart-throughput"></canvas>
+    </div>
+
+  </div>
+
+  <!-- Channel scan + interference -->
+  <div class="section-title">Channel Scan &amp; Nearby Access Points</div>
+  <div class="scan-section">
+    <h3>Nearby Access Points</h3>
+    <table class="scan-table">
+      <thead>
+        <tr>
+          <th>SSID</th>
+          <th>BSSID</th>
+          <th>Channel</th>
+          <th>Signal</th>
+          <th>Security</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="scan-tbody">
+        <tr><td colspan="6" style="text-align:center;color:#4a5568;padding:20px">Loading…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Channel Congestion</div>
+  <div class="scan-section">
+    <h3>APs per Channel</h3>
+    <div id="interference-info" style="padding:4px 0">
+      <div style="color:#4a5568;font-size:12px">Waiting for scan data…</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── Toast container ─────────────────────────────────────────────────────── -->
+<div id="toast-container"></div>
+
+<!-- Inject probe ID for JavaScript -->
+<script>const PROBE_ID = {{ probe_id | tojson }};</script>
+
+<!-- ── Scripts ─────────────────────────────────────────────────────────────── -->
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/particles.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+
+</body>
+</html>

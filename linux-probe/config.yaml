@@ -1,0 +1,76 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# LabWiFiMon Linux Probe — Configuration
+# ──────────────────────────────────────────────────────────────────────────────
+# Edit this file, then restart the service:
+#   sudo systemctl restart labwifimon-probe
+#
+# Every setting can also be overridden with an environment variable:
+#   LABWIFIMON_MQTT_HOST, LABWIFIMON_PROBE_ID, LABWIFIMON_INTERVAL, …
+# ──────────────────────────────────────────────────────────────────────────────
+
+# WiFi interface to monitor.
+# Leave blank to auto-detect the first wireless interface that is UP.
+# Common values: wlan0  wlp3s0  wlp0s20f3  wlan1
+interface: wlan0
+
+# Human-readable probe identifier — appears in MQTT topics and Grafana panels.
+# Default (when blank): system hostname.
+probe_id: pi-probe-1
+
+# Optional physical location label stored in the metrics payload.
+# Useful when multiple probes are running on the same host or rack.
+location: ""   # e.g. "lab-rack-a", "desk-west"
+
+# ── MQTT ──────────────────────────────────────────────────────────────────────
+mqtt_host: localhost
+mqtt_port: 1883
+mqtt_topic_prefix: labwifimon
+
+# Uncomment and fill in if your Mosquitto broker requires authentication:
+# mqtt_username: ""
+# mqtt_password: ""
+
+# ── Ping / Latency ─────────────────────────────────────────────────────────────
+# "auto" reads the default gateway from 'ip route'; set to an IP to override.
+ping_gateway: auto
+
+# A reliable DNS resolver used to measure dns_avg_ms latency.
+ping_dns: 1.1.1.1
+
+# External host for internet latency / jitter / packet-loss measurement.
+ping_external: 8.8.8.8
+
+# Number of ICMP echo packets per measurement round.
+# More packets → more accurate jitter estimate; adds to cycle time.
+ping_count: 10
+
+# ── Throughput ─────────────────────────────────────────────────────────────────
+# URL of a large static file served by the labwifimon throughput server
+# (pi-server/throughput-server).  Set throughput_enabled to false to skip.
+throughput_url: http://localhost:8080/test_payload.bin
+throughput_enabled: true
+
+# ── Timing ─────────────────────────────────────────────────────────────────────
+# Full metric collection + MQTT publish interval (seconds).
+interval_seconds: 30
+
+# 'iw dev <iface> scan' interval (seconds).
+# Requires CAP_NET_ADMIN or root.  Set to 0 to disable.
+scan_interval_seconds: 300
+
+# Online/offline heartbeat interval (seconds).  Published with retain=true.
+heartbeat_interval_seconds: 60
+
+# ── WiFi 7 / Advanced ──────────────────────────────────────────────────────────
+# Enable EHT / MLO / 6 GHz capability detection (Intel BE200, MT7925, etc.).
+# Reads 'iw phy' output — safe to enable even on non-WiFi-7 hardware.
+wifi7_monitoring: true
+
+# Optional: dedicated interface for monitor_mode.py frame capture.
+# WARNING — monitor mode takes this interface OFFLINE for normal traffic.
+# Use a second USB/M.2 adapter.  Leave blank to disable.
+# monitor_interface: wlan1
+
+# ── Logging ────────────────────────────────────────────────────────────────────
+# DEBUG | INFO | WARNING | ERROR
+log_level: INFO

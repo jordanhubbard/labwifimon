@@ -1,0 +1,27 @@
+# Environment files with secrets
+pi-server/.env
+!pi-server/.env.example
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+
+# PlatformIO
+esp32-probe/.pio/
+esp32-probe/.vscode/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker volumes
+data/

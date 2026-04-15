@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LabWiFiMon — Network Operations Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    /* Page-specific overrides */
+    .site-header .logo { font-size: 20px; }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────────── -->
+<header class="site-header">
+  <div class="logo">Lab<span>WiFi</span>Mon</div>
+
+  <div class="header-gauge-wrapper">
+    <canvas id="health-gauge" width="90" height="78"></canvas>
+    <span class="gauge-label">Network Health</span>
+  </div>
+
+  <div class="header-stats">
+    <div class="stat-item">
+      <span class="label">Probes</span>
+      <span class="value" id="probe-count">0 probes</span>
+    </div>
+    <div class="stat-item">
+      <span class="label">MQTT</span>
+      <span class="value" style="color:var(--green)">Connected</span>
+    </div>
+  </div>
+
+  <div class="connection-badge disconnected" id="conn-badge">
+    <span class="dot"></span>
+    <span class="label">Connecting…</span>
+  </div>
+</header>
+
+<!-- ── Main content ────────────────────────────────────────────────────────── -->
+<main class="main-content">
+  <div class="section-title">Active Probes</div>
+  <div id="probe-grid">
+    <!-- Probe cards injected by dashboard.js -->
+  </div>
+</main>
+
+<!-- ── Toast container ─────────────────────────────────────────────────────── -->
+<div id="toast-container"></div>
+
+<!-- ── Scripts ─────────────────────────────────────────────────────────────── -->
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script src="{{ url_for('static', filename='js/particles.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
+</body>
+</html>

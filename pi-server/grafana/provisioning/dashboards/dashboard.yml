@@ -1,0 +1,19 @@
+# =============================================================================
+# Grafana Dashboard Provisioning — LabWiFiMon
+# =============================================================================
+# All .json files placed in /var/lib/grafana/dashboards/ (mapped from
+# ./grafana/dashboards/ on the host) will be auto-loaded at startup.
+# Place exported Grafana dashboard JSON files there to auto-provision them.
+
+apiVersion: 1
+
+providers:
+  - name: LabWiFiMon Dashboards
+    orgId: 1
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: false
