@@ -2,7 +2,7 @@
 
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
-![Stars](https://img.shields.io/github/stars/your-org/labwifimon?style=social)
+![Stars](https://img.shields.io/github/stars/jordanhubbard/labwifimon?style=social)
 
 LabWiFiMon is an open-source, distributed WiFi quality monitoring system built for labs, makerspaces, and small offices. Low-cost ESP32 or Raspberry Pi probes scatter around your space and continuously measure RSSI, latency, jitter, packet loss, and throughput — publishing metrics via MQTT to a Raspberry Pi server running InfluxDB, Grafana, and a real-time animated Web UI. Optionally add a WiFi 6E or WiFi 7 card to a Pi 5 probe for 6 GHz band visibility and MLO link metrics.
 
@@ -53,7 +53,7 @@ LabWiFiMon is an open-source, distributed WiFi quality monitoring system built f
 ### 1. Clone and start the server
 
 ```bash
-git clone https://github.com/your-org/labwifimon.git
+git clone https://github.com/jordanhubbard/labwifimon.git
 cd labwifimon/pi-server
 cp .env.example .env          # edit: set INFLUXDB_TOKEN, ORG, BUCKET
 docker compose up -d
