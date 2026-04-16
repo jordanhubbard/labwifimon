@@ -65,14 +65,19 @@ Web UI: `http://<pi-ip>:8080`
 ### 2. Configure and flash a probe
 
 ```bash
+# Install PlatformIO (if you don't have it)
+pip install platformio
+
 # Edit probe credentials
-nano esp32-probe/include/probe_config.h
+nano esp32-probe/src/config.h
 # Set WIFI_SSID, WIFI_PASSWORD, MQTT_SERVER, PROBE_ID
 
-# Flash with PlatformIO
+# Build and flash with PlatformIO
 cd esp32-probe
 pio run --target upload
 ```
+
+See [ESP32 Probe Build Guide](esp32-probe/README.md) for detailed instructions, Raspberry Pi setup, and troubleshooting.
 
 ### 3. Watch it go
 
