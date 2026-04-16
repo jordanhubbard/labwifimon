@@ -63,9 +63,14 @@ pio run
 
 # Build for ESP32-S3
 pio run -e esp32-s3
+
+# Build for ESP32-C5 (WiFi 6, dual-band 2.4 + 5 GHz)
+pio run -e esp32-c5
 ```
 
-First build downloads the ESP32 Arduino toolchain automatically (~300 MB). Subsequent builds are fast.
+First build downloads the toolchain automatically (~300 MB; the C5 downloads a separate pioarduino fork). Subsequent builds are fast.
+
+> **ESP32-C5 note:** The C5 is not yet supported by the official PlatformIO espressif32 platform. The `esp32-c5` environment uses the [pioarduino community fork](https://github.com/pioarduino/platform-espressif32), which is downloaded automatically on first build.
 
 ---
 
@@ -80,9 +85,12 @@ pio run --target upload
 # Flash ESP32-S3
 pio run -e esp32-s3 --target upload
 
+# Flash ESP32-C5
+pio run -e esp32-c5 --target upload
+
 # If auto-detection fails, specify the port
-pio run --target upload --upload-port /dev/ttyUSB0      # Linux
-pio run --target upload --upload-port /dev/ttyACM0      # ESP32-S3 USB-CDC
+pio run --target upload --upload-port /dev/ttyUSB0      # Linux (ESP32)
+pio run --target upload --upload-port /dev/ttyACM0      # ESP32-S3/C5 USB-CDC
 pio run --target upload --upload-port /dev/cu.usbserial-*  # macOS
 ```
 
@@ -120,6 +128,7 @@ pio run --target upload && pio device monitor
 |---|---|---|---|
 | `esp32dev` (default) | ESP32 DevKit | GPIO 2 (blue) | Most common dev board |
 | `esp32-s3` | ESP32-S3-DevKitC-1 | GPIO 2 | USB-CDC serial, RGB LED on GPIO 48 not used |
+| `esp32-c5` | ESP32-C5-DevKitC-1 | GPIO 2 | WiFi 6 dual-band (2.4+5 GHz), RISC-V, USB-CDC, uses pioarduino fork |
 
 ---
 
